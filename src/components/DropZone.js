@@ -17,12 +17,36 @@
 
 
 // DropZone component that acts as a drop area for drag-and-drop functionality
+// const DropZone = ({ definition, handleDrop, placedItem }) => {
+//   return (
+//     <div
+//       className="drop-zone"
+//       onDragOver={(e) => {
+//         e.preventDefault(); // Required for Chrome to allow drops
+//         e.dataTransfer.dropEffect = "move";
+//       }}
+//       onDrop={(e) => {
+//         const draggedTerm = e.dataTransfer.getData("text/plain");
+//         handleDrop(e, definition, draggedTerm);
+//       }}
+//       onTouchEnd={(e) => {
+//         e.preventDefault(); // Prevent default mobile behavior
+//         console.log("Touch end detected on drop zone:", definition.text);
+//       }}
+//     >
+//       <span className="drop-text">{placedItem || definition.text}</span>
+//     </div>
+//   );
+// };
+
+// export default DropZone; // Exporting the DropZone component for use in other parts of the app
+
 const DropZone = ({ definition, handleDrop, placedItem }) => {
   return (
     <div
       className="drop-zone"
       onDragOver={(e) => {
-        e.preventDefault(); // Required for Chrome to allow drops
+        e.preventDefault(); // Allow dragging
         e.dataTransfer.dropEffect = "move";
       }}
       onDrop={(e) => {
@@ -30,8 +54,9 @@ const DropZone = ({ definition, handleDrop, placedItem }) => {
         handleDrop(e, definition, draggedTerm);
       }}
       onTouchEnd={(e) => {
-        e.preventDefault(); // Prevent default mobile behavior
-        console.log("Touch end detected on drop zone:", definition.text);
+        e.preventDefault();
+        const draggedTerm = e.target.innerText;
+        handleDrop(e, definition, draggedTerm);
       }}
     >
       <span className="drop-text">{placedItem || definition.text}</span>
@@ -39,4 +64,4 @@ const DropZone = ({ definition, handleDrop, placedItem }) => {
   );
 };
 
-export default DropZone; // Exporting the DropZone component for use in other parts of the app
+export default DropZone;
