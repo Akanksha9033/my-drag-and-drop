@@ -490,3 +490,13 @@ button:hover {
 .submit-btn:hover {
   background-color: #0056b3; /* Darker blue */
 }
+.drag-item {
+  cursor: grab;              /* 👈 Show grab hand */
+  touch-action: none;        /* 👈 Prevent scrolling while dragging */
+  user-select: none;         /* 👈 Prevent text selection */
+  transition: transform 0.2s ease;
+}
+
+.drag-item:active {
+  cursor: grabbing;          /* 👈 Show grabbing hand while dragging */
+}
