@@ -46,7 +46,7 @@ const DropZone = ({ definition, handleDrop, placedItem }) => {
     <div
       className="drop-zone"
       onDragOver={(e) => {
-        e.preventDefault(); // Allow dragging
+        e.preventDefault(); // Required for allowing drops
         e.dataTransfer.dropEffect = "move";
       }}
       onDrop={(e) => {
@@ -58,6 +58,7 @@ const DropZone = ({ definition, handleDrop, placedItem }) => {
         const draggedTerm = e.target.innerText;
         handleDrop(e, definition, draggedTerm);
       }}
+      style={{ position: "relative", minHeight: "50px" }} // Ensure space for drop
     >
       <span className="drop-text">{placedItem || definition.text}</span>
     </div>
@@ -65,4 +66,3 @@ const DropZone = ({ definition, handleDrop, placedItem }) => {
 };
 
 export default DropZone;
-
