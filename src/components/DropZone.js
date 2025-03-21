@@ -46,7 +46,7 @@ const DropZone = ({ definition, handleDrop, placedItem }) => {
     <div
       className="drop-zone"
       onDragOver={(e) => {
-        e.preventDefault(); // Required for dragging
+        e.preventDefault(); // Allow dragging
         e.dataTransfer.dropEffect = "move";
       }}
       onDrop={(e) => {
@@ -65,3 +65,4 @@ const DropZone = ({ definition, handleDrop, placedItem }) => {
 };
 
 export default DropZone;
+
