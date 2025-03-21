@@ -41,58 +41,64 @@
 
 // export default DragItem;
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 const DragItem = ({ term, handleDragStart }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [touchElement, setTouchElement] = useState(null);
-
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  document.body.style.overflow = isDragging ? "hidden" : "auto";
+  const originalRef = useRef(null); // for tracking the real element
+  const [dragging, setDragging] = useState(false);
 
   const handleTouchStart = (e) => {
     e.preventDefault();
-    setIsDragging(true);
+    setDragging(true);
+
+    const element = originalRef.current;
     const touch = e.touches[0];
-    const clone = e.target.cloneNode(true);
-    clone.style.position = "absolute";
-    clone.style.width = `${e.target.offsetWidth}px`;
-    clone.style.zIndex = 1000;
-    clone.style.pointerEvents = "none";
-    document.body.appendChild(clone);
-    setTouchElement(clone);
-    clone.style.left = `${touch.clientX}px`;
-    clone.style.top = `${touch.clientY}px`;
+
+    element.style.position = "absolute";
+    element.style.zIndex = 1000;
+    element.style.left = `${touch.clientX - element.offsetWidth / 2}px`;
+    element.style.top = `${touch.clientY - element.offsetHeight / 2}px`;
   };
 
   const handleTouchMove = (e) => {
-    if (!isDragging || !touchElement) return;
+    if (!dragging) return;
+
+    const element = originalRef.current;
     const touch = e.touches[0];
-    touchElement.style.left = `${touch.clientX - touchElement.offsetWidth / 2}px`;
-    touchElement.style.top = `${touch.clientY - touchElement.offsetHeight / 2}px`;
+
+    element.style.left = `${touch.clientX - element.offsetWidth / 2}px`;
+    element.style.top = `${touch.clientY - element.offsetHeight / 2}px`;
   };
 
   const handleTouchEnd = (e) => {
     e.preventDefault();
-    setIsDragging(false);
-    if (touchElement) {
-      const touch = e.changedTouches[0];
-      const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (dropTarget && dropTarget.classList.contains("drop-zone")) {
-        const event = new Event("drop", { bubbles: true });
-        event.dataTransfer = { getData: () => term };
-        dropTarget.dispatchEvent(event);
-      }
-      document.body.removeChild(touchElement);
-      setTouchElement(null);
+    setDragging(false);
+
+    const touch = e.changedTouches[0];
+    const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    if (dropTarget && dropTarget.classList.contains("drop-zone")) {
+      const dropEvent = new Event("drop", { bubbles: true });
+      dropEvent.dataTransfer = {
+        getData: () => term,
+      };
+      dropTarget.dispatchEvent(dropEvent);
     }
+
+    // Reset position
+    const element = originalRef.current;
+    element.style.position = "static";
+    element.style.zIndex = "auto";
+    element.style.left = "";
+    element.style.top = "";
   };
 
   return (
     <div
+      ref={originalRef}
       className="drag-item"
-      draggable={!isMobile}
+      draggable={!isMobile} // Desktop ke liye native drag
       onDragStart={(e) => {
         if (isMobile) return;
         e.dataTransfer.setData("text/plain", term);
@@ -101,7 +107,7 @@ const DragItem = ({ term, handleDragStart }) => {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      style={{ touchAction: "none" }} // 👈 Important for smooth mobile behavior
+      style={{ touchAction: "none" }} // important to stop scroll during drag
     >
       {term}
     </div>
