@@ -387,7 +387,8 @@ const DragAndDropQuiz = () => {
   }, [currentQuestion]);
 
   const handleDragStart = (e, term) => {
-    e.dataTransfer.setData("term", term);
+    e.dataTransfer.setData("text/plain", term);
+
   };
 
   const handleDrop = (e, definition) => {
