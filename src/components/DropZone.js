@@ -65,3 +65,4 @@ const DropZone = ({ definition, handleDrop, placedItem }) => {
 };
 
 export default DropZone;
+

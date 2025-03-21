@@ -44,42 +44,40 @@
 import React, { useState } from "react";
 
 const DragItem = ({ term, handleDragStart }) => {
-  const [touchPosition, setTouchPosition] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [touchPosition, setTouchPosition] = useState({ x: 0, y: 0 });
 
-  // Check if the user is on a mobile device
+  // Detect if the user is on a mobile device
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   // Handle touch start
   const handleTouchStart = (e) => {
     e.preventDefault();
     setIsDragging(true);
-    setTouchPosition({ x: e.touches[0].clientX, y: e.touches[0].clientY });
-    handleDragStart(e, term);
+    const touch = e.touches[0];
+    setTouchPosition({ x: touch.clientX, y: touch.clientY });
   };
 
-  // Handle touch movement
+  // Handle touch move (Move the item under the finger)
   const handleTouchMove = (e) => {
     if (!isDragging) return;
 
-    const element = e.target;
     const touch = e.touches[0];
+    const element = e.target;
 
     element.style.position = "absolute";
-    element.style.left = `${touch.clientX - 50}px`; // Adjust positioning
+    element.style.left = `${touch.clientX - 50}px`;
     element.style.top = `${touch.clientY - 25}px`;
   };
 
-  // Handle touch end (Drop)
+  // Handle touch end (Detect drop target)
   const handleTouchEnd = (e) => {
     e.preventDefault();
     setIsDragging(false);
 
-    // Get the drop target
-    const dropTarget = document.elementFromPoint(
-      e.changedTouches[0].clientX,
-      e.changedTouches[0].clientY
-    );
+    // Find the drop zone under the user's touch
+    const touch = e.changedTouches[0];
+    const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
 
     if (dropTarget && dropTarget.classList.contains("drop-zone")) {
       const event = new Event("drop", { bubbles: true });
@@ -88,14 +86,18 @@ const DragItem = ({ term, handleDragStart }) => {
       };
       dropTarget.dispatchEvent(event);
     }
+
+    // Reset the element's position
+    const element = e.target;
+    element.style.position = "static";
   };
 
   return (
     <div
       className="drag-item"
-      draggable={!isMobile} // Enable dragging only on desktop
+      draggable={!isMobile} // Disable native dragging on mobile
       onDragStart={(e) => {
-        if (isMobile) return; // Prevent dragStart on mobile
+        if (isMobile) return;
         e.dataTransfer.setData("text/plain", term);
         handleDragStart(e, term);
       }}
@@ -109,4 +111,5 @@ const DragItem = ({ term, handleDragStart }) => {
 };
 
 export default DragItem;
+
 
