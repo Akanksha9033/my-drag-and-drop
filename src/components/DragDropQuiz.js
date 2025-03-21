@@ -349,7 +349,6 @@
 
 // export default DragAndDropQuiz;
 
-
 import React, { useState, useEffect } from "react";
 import quizData from "../data/quizData";
 import "./DragAndDropQuiz.css";
@@ -374,7 +373,7 @@ const DragAndDropQuiz = () => {
   const [showInstructions, setShowInstructions] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
-  const [userMatches, setUserMatches] = useState([]);
+  const [userMatches, setUserMatches] = useState([]); // ✅ Ensure it's an array
   const [solutions, setSolutions] = useState(Array(quizData.length).fill([]));
   const [showSolution, setShowSolution] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
@@ -388,18 +387,31 @@ const DragAndDropQuiz = () => {
 
   const handleDragStart = (e, term) => {
     e.dataTransfer.setData("text/plain", term);
-
   };
 
-  const handleDrop = (e, definition) => {
-    const draggedTerm = e.dataTransfer.getData("term");
+  const handleDrop = (e, definition, draggedTerm) => {
+    draggedTerm = draggedTerm || e.dataTransfer.getData("text/plain");
     const isCorrect = draggedTerm === definition.match;
 
-    const newMatch = { term: draggedTerm, correct: isCorrect, correctMatch: definition.match };
+    const newMatch = {
+      term: draggedTerm,
+      correct: isCorrect,
+      correctMatch: definition.match,
+    };
 
+    // ✅ Ensure `userMatches` remains an array
     setUserMatches((prev) => [...prev, newMatch]);
-    setPlacedItems((prev) => ({ ...prev, [definition.text]: draggedTerm }));
 
+    // ✅ Keep `placedItems` structured correctly
+    setPlacedItems((prev) => ({
+      ...prev,
+      [currentQuestion]: {
+        ...(prev[currentQuestion] || {}),
+        [definition.text]: draggedTerm,
+      },
+    }));
+
+    // ✅ Track attempted items properly
     setAttemptedItems((prev) => ({
       ...prev,
       [currentQuestion]: [...(prev[currentQuestion] || []), draggedTerm],
@@ -409,7 +421,7 @@ const DragAndDropQuiz = () => {
   const nextQuestion = () => {
     setSolutions((prevSolutions) => {
       const updatedSolutions = [...prevSolutions];
-      updatedSolutions[currentQuestion] = [...userMatches];
+      updatedSolutions[currentQuestion] = [...userMatches]; // ✅ Ensure it's an array
       return updatedSolutions;
     });
 
@@ -423,14 +435,14 @@ const DragAndDropQuiz = () => {
 
     if (currentQuestion < quizData.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
-      setUserMatches([]);
+      setUserMatches([]); // ✅ Reset as an array
       setPlacedItems({});
     }
   };
 
   const previousQuestion = () => {
     setCurrentQuestion((prev) => prev - 1);
-    setUserMatches([]);
+    setUserMatches([]); // ✅ Reset to an array
     setPlacedItems({});
   };
 
@@ -485,7 +497,7 @@ const DragAndDropQuiz = () => {
                   key={index}
                   definition={definition}
                   handleDrop={handleDrop}
-                  placedItem={placedItems[definition.text]}
+                  placedItem={placedItems[currentQuestion]?.[definition.text]}
                 />
               ))}
             </div>
@@ -527,3 +539,5 @@ const DragAndDropQuiz = () => {
 };
 
 export default DragAndDropQuiz;
+
+

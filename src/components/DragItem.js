@@ -97,7 +97,7 @@ const DragItem = ({ term, handleDragStart }) => {
       if (dropTarget && dropTarget.classList.contains("drop-zone")) {
         const event = new Event("drop", { bubbles: true });
         event.dataTransfer = {
-          getData: () => term, // Simulate data transfer
+          getData: () => term,
         };
         dropTarget.dispatchEvent(event);
       }
