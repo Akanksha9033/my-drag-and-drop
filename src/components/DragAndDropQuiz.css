@@ -491,13 +491,16 @@ button:hover {
   background-color: #0056b3; /* Darker blue */
 }
 .drag-item {
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
+  cursor: grab;              /* 👈 Show grab hand */
+  touch-action: none;        /* 👈 Prevent scrolling while dragging */
+  user-select: none;         /* 👈 Prevent text selection */
   transition: top 0.1s, left 0.1s;
 }
 
 .drag-item:active {
-  cursor: grabbing;
+  cursor: grabbing;          /* 👈 Show grabbing hand while dragging */
 }
+
+
+
 
