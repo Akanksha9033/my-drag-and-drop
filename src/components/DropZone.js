@@ -17,20 +17,23 @@
 
 
 // DropZone component that acts as a drop area for drag-and-drop functionality
-const DropZone = ({ definition, handleDrop, placedItem, isAllDropped }) => {
+const DropZone = ({ definition, handleDrop, placedItem }) => {
   return (
     <div
-      className={`drop-zone ${isAllDropped ? "center-drop" : ""}`} // Adds the 'center-drop' class if all items are dropped
+      className="drop-zone"
       onDragOver={(e) => {
-        e.preventDefault(); // Prevents default behavior to allow dragging over this area
-        e.dataTransfer.dropEffect = "move"; // Ensures proper drop behavior
+        e.preventDefault(); // Required for Chrome to allow drops
+        e.dataTransfer.dropEffect = "move";
       }}
       onDrop={(e) => {
-        const draggedTerm = e.dataTransfer.getData("text/plain"); // Retrieve data using "text/plain" MIME type
-        handleDrop(e, definition, draggedTerm); // Calls handleDrop function when an item is dropped
+        const draggedTerm = e.dataTransfer.getData("text/plain");
+        handleDrop(e, definition, draggedTerm);
+      }}
+      onTouchEnd={(e) => {
+        e.preventDefault(); // Prevent default mobile behavior
+        console.log("Touch end detected on drop zone:", definition.text);
       }}
     >
-      {/* Displays the placed item if available; otherwise, shows the default definition text */}
       <span className="drop-text">{placedItem || definition.text}</span>
     </div>
   );

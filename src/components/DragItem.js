@@ -42,23 +42,31 @@
 // export default DragItem;
 
 
-import React from "react"; // Importing the React library
+import React from "react";
 
-// DragItem component represents a draggable item
 const DragItem = ({ term, handleDragStart }) => {
+  // Check if the user is on a mobile device
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
   return (
     <div
-      className="drag-item" // Applying CSS class for styling
-      draggable // Makes the item draggable
+      className="drag-item"
+      draggable={!isMobile} // Disable dragging on mobile devices
       onDragStart={(e) => {
-        e.dataTransfer.setData("text/plain", term); // Explicit MIME type for Chrome
-        e.dataTransfer.effectAllowed = "move"; // Ensures proper drag behavior
-        handleDragStart(e, term); // Calls the existing function
+        if (isMobile) return; // Prevent dragStart on mobile
+        e.dataTransfer.setData("text/plain", term);
+        e.dataTransfer.effectAllowed = "move";
+        handleDragStart(e, term);
+      }}
+      onTouchStart={(e) => {
+        // Prevent Chrome from treating it as a file drag
+        e.preventDefault();
+        console.log("Touch start detected:", term);
       }}
     >
-      {term} {/* Displays the term inside the draggable item */}
+      {term}
     </div>
   );
 };
 
-export default DragItem; // Exporting DragItem component for use in other parts of the app
+export default DragItem;
